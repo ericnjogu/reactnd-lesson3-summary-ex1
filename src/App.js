@@ -6,36 +6,54 @@ import ItemList from './ItemList';
 
 class App extends React.Component {
   state = {
-    name: '',
-    items: [],
+    firstName: '',
+    lastName: '',
+    userName: '',
+    users: [],
+    showMoviesCount: true
   };
 
-/*
-had to add parenthesis to the event variable to fix 'undefined' errors
-*/
-  handleChange = (event) => {
-    this.setState({ value: event.target.value });
+  handleChange = (event, inputName) => {
+    this.setState({ [inputName]: event.target.value });
   };
 
   inputIsEmpty = () => {
-    return this.state.value === '';
+    return this.state.firstName === '' || this.state.lastName === '' || this.state.userName === '';
   };
-
-	noItemsFound = () => {
-    	return this.state.items.length === 0;
-  	};
-
-	deleteLastItem = event => {
-    	this.setState(prevState => ({ items: this.state.items.slice(0, -1) }));
-  	};
 
 	addItem = (event) => {
       event.preventDefault();
-      this.setState(oldState => ({
-        items: [...oldState.items, this.state.value],
-        value: '',//clear input field
+      this.setState(oldState => (
+        oldState.users.filter(user => user.userName === oldState.userName).length > 0 ? 
+        {message: `Username ${oldState.userName} exists`} 
+        : 
+        {users: [...oldState.users, {
+          firstName: oldState.firstName,
+          lastName: oldState.lastName,
+          userName: oldState.userName,
+          movieCount:0,
+        }],
+         message:'',
+        //value: '',//clear input field
       }));
     };
+	
+	formatUser = (user) => {
+      let movieString = this.state.showMoviesCount ? `- movies: ${user.movieCount}` : ""
+      return `${user.firstName} ${user.lastName} (${user.userName}) ${movieString}`;
+    }
+
+	toggleShowMovie = () => {
+      this.setState(
+        (oldState) => (
+          {showMoviesCount: !oldState.showMoviesCount}    
+        )
+      )
+    }
+	
+	keyProp = (user) => {
+      return user.userName
+    }
   
 
   render() {
@@ -43,19 +61,32 @@ had to add parenthesis to the event variable to fix 'undefined' errors
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Exercise 2 - Controlled Components</h1>
+          <h1 className="App-title">Exercise 1 - All Together</h1>
         </header>
-        <h2>Shopping List</h2>
-    	{/* using (event) => this.addItem} did not work*/}
+        <h2>Users</h2>
+    	<div className="error">{this.state.message}</div>
         <form onSubmit={this.addItem}>
           <NewItemInput
             value={this.state.value}
-            handleChange={this.handleChange}
+            handleChange={(event) => this.handleChange(event, 'firstName')}
+			fieldNamePrompt = "First Name"
+          />
+			<NewItemInput
+            value={this.state.value}
+            handleChange={(event) => this.handleChange(event, 'lastName')}
+			fieldNamePrompt = "Last Name"
+          />
+		<NewItemInput
+            value={this.state.value}
+            handleChange={(event) => this.handleChange(event, 'userName')}
+			fieldNamePrompt = "User Name"
           />
           <button disabled={this.inputIsEmpty()}>Add</button>
         </form>
-		
-		<ItemList items={this.state.items} deleteLastItem={this.deleteLastItem} noItemsFound={this.noItemsFound}/>
+		<input id="toggle-movies" type="checkbox" onChange={this.toggleShowMovie} checked={this.state.showMoviesCount}/>
+		<label htmlFor="toggle-movies">Toggle Movie Info</label>
+		<ItemList items={this.state.users} listHeading={`${this.state.users.length} User(s)`} formatItem={this.formatUser}
+			keyProp={this.keyProp}/>
       </div>
     );
   }

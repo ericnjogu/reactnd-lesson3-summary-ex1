@@ -4,16 +4,15 @@ function ItemList (props) {
     return (
       <div>
         <div>
-          <p className="items">Items</p>
+          <p className="items">{props.listHeading}</p>
           <ol className="item-list">
-          {props.items.map((item, index) => <li key={index}>{item}</li>)}
+          {props.items.map((user, index) => <li key={props.keyProp(user)}>{props.formatItem(user)}</li>)}
         </ol>
-        {/*using (event) => this.props.deleteLastItem did not work*/}
           </div>
           <div>
-        <button onClick={props.deleteLastItem} disabled={props.noItemsFound()}>
+            {/*<button onClick={props.deleteLastItem} disabled={props.noItemsFound()}>
             Delete Last Item
-        </button>
+        </button>*/}
           </div>
 		</div>
   );
