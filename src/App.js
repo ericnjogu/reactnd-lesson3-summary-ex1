@@ -6,7 +6,7 @@ import ItemList from './ItemList';
 
 class App extends React.Component {
   state = {
-    value: '',
+    name: '',
     items: [],
   };
 
